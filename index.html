@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Controle do Braço Robótico</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; }
+    .button { font-size: 18px; padding: 12px 24px; margin: 10px; border-radius: 12px; border: none; background-color: #4CAF50; color: white; cursor: pointer; }
+    .button:hover { background-color: #45a049; }
+    .row { margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h2>Controle do Braço Robótico</h2>
+  <div class="row">
+    <button class="button" onclick="selectJoint(1)">J1</button>
+    <button class="button" onclick="selectJoint(2)">J2</button>
+    <button class="button" onclick="selectJoint(3)">J3</button>
+    <button class="button" onclick="selectJoint(4)">J4</button>
+    <button class="button" onclick="selectJoint(5)">J5</button>
+  </div>
+  <div class="row">
+    <button class="button" onclick="sendCommand('left')">⬅️</button>
+    <button class="button" onclick="sendCommand('right')">➡️</button>
+  </div>
+  <p id="status"></p>
+  <script>
+    let selectedJoint = null;
+    const esp32URL = "https://SEU_SUBDOMINIO_NGROK.ngrok.io"; // <--- será preenchido depois
+
+    function selectJoint(joint) {
+      selectedJoint = joint;
+      document.getElementById("status").innerText = `Junta selecionada: J${joint}`;
+    }
+
+    function sendCommand(direction) {
+      if (!selectedJoint) {
+        alert("Selecione uma junta primeiro.");
+        return;
+      }
+      const url = `${esp32URL}/comando?joint=${selectedJoint}&dir=${direction}`;
+      fetch(url)
+        .then(response => response.text())
+        .then(text => {
+          document.getElementById("status").innerText = `Comando enviado: J${selectedJoint} - ${direction}`;
+        })
+        .catch(err => {
+          document.getElementById("status").innerText = `Erro: ${err}`;
+        });
+    }
+  </script>
+</body>
+</html>
+
