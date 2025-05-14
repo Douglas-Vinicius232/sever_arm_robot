@@ -13,15 +13,17 @@
 <body>
   <h2>Controle do Braço Robótico</h2>
   <div class="row">
-    <button class="button" onclick="selectJoint(1)">J1</button>
-    <button class="button" onclick="selectJoint(2)">J2</button>
-    <button class="button" onclick="selectJoint(3)">J3</button>
-    <button class="button" onclick="selectJoint(4)">J4</button>
-    <button class="button" onclick="selectJoint(5)">J5</button>
-  </div>
-  <div class="row">
-    <button class="button" onclick="sendCommand('left')">⬅️</button>
-    <button class="button" onclick="sendCommand('right')">➡️</button>
+    <button class="button" onclick="selectJoint(1)">B_UP</button>
+    <button class="button" onclick="selectJoint(2)">B_DOWN</button>
+    <button class="button" onclick="selectJoint(3)">C_UP</button>
+    <button class="button" onclick="selectJoint(4)">C_DOWN</button>
+    <button class="button" onclick="selectJoint(5)">D_UP</button>
+    <button class="button" onclick="selectJoint(6)">D_DOWN</button>
+    <button class="button" onclick="selectJoint(7)">E_UP</button>
+    <button class="button" onclick="selectJoint(8)">E_DOWN</button>
+    <button class="button" onclick="selectJoint(7)">F_RIGHT</button>
+    <button class="button" onclick="selectJoint(8)">F_LEFT</button>
+    
   </div>
   <p id="status"></p>
   <script>
