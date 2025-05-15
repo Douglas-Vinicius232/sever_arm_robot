@@ -1,56 +1,139 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Controle do Braço Robótico</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; padding: 20px; }
-    .button { font-size: 18px; padding: 12px 24px; margin: 10px; border-radius: 12px; border: none; background-color: #4CAF50; color: white; cursor: pointer; }
-    .button:hover { background-color: #45a049; }
-    .row { margin-bottom: 20px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle do Robô</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .joint-control {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .position-display {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-  <h2>Controle do Braço Robótico</h2>
-  <div class="row">
-    <button class="button" onclick="selectJoint(1)">B_UP</button>
-    <button class="button" onclick="selectJoint(2)">B_DOWN</button>
-    <button class="button" onclick="selectJoint(3)">C_UP</button>
-    <button class="button" onclick="selectJoint(4)">C_DOWN</button>
-    <button class="button" onclick="selectJoint(5)">D_UP</button>
-    <button class="button" onclick="selectJoint(6)">D_DOWN</button>
-    <button class="button" onclick="selectJoint(7)">E_UP</button>
-    <button class="button" onclick="selectJoint(8)">E_DOWN</button>
-    <button class="button" onclick="selectJoint(7)">F_RIGHT</button>
-    <button class="button" onclick="selectJoint(8)">F_LEFT</button>
+    <h1>Controle Remoto do Robô</h1>
     
-  </div>
-  <p id="status"></p>
-  <script>
-    let selectedJoint = null;
-    const esp32URL = "https://SEU_SUBDOMINIO_NGROK.ngrok.io"; // <--- será preenchido depois
+    <div class="control-panel">
+        <!-- Junção B -->
+        <div class="joint-control">
+            <h2>Junção B</h2>
+            <button onclick="moveJoint('B', 'up')">Para Cima</button>
+            <button onclick="moveJoint('B', 'down')">Para Baixo</button>
+        </div>
+        
+        <!-- Junção C -->
+        <div class="joint-control">
+            <h2>Junção C</h2>
+            <button onclick="moveJoint('C', 'up')">Para Cima</button>
+            <button onclick="moveJoint('C', 'down')">Para Baixo</button>
+        </div>
+        
+        <!-- Junção D -->
+        <div class="joint-control">
+            <h2>Junção D</h2>
+            <button onclick="moveJoint('D', 'up')">Para Cima</button>
+            <button onclick="moveJoint('D', 'down')">Para Baixo</button>
+        </div>
+        
+        <!-- Junção E -->
+        <div class="joint-control">
+            <h2>Junção E</h2>
+            <button onclick="moveJoint('E', 'up')">Para Cima</button>
+            <button onclick="moveJoint('E', 'down')">Para Baixo</button>
+        </div>
+        
+        <!-- Junção F -->
+        <div class="joint-control">
+            <h2>Junção F</h2>
+            <button onclick="moveJoint('F', 'left')">Para Esquerda</button>
+            <button onclick="moveJoint('F', 'right')">Para Direita</button>
+        </div>
+    </div>
+    
+    <div class="position-display">
+        <h2>Posição Atual do Robô</h2>
+        <div id="currentPosition">Aguardando dados do robô...</div>
+    </div>
 
-    function selectJoint(joint) {
-      selectedJoint = joint;
-      document.getElementById("status").innerText = `Junta selecionada: J${joint}`;
-    }
+    <!-- Adicione os scripts do Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
+    <script>
+        // Configuração do Firebase
+    const firebaseConfig = {
+    apiKey: "AIzaSyCUp5rzTrDmoAUEsfbhdLRwwg-7J3EeQtw",
+    authDomain: "arm-robot-control.firebaseapp.com",
+    databaseURL: "https://arm-robot-control-default-rtdb.firebaseio.com",
+    projectId: "arm-robot-control",
+    storageBucket: "arm-robot-control.firebasestorage.app",
+    messagingSenderId: "315216266863",
+    appId: "1:315216266863:web:7e0a836c2f5a4cc6c5ef9a"
+  };
+        // Inicializa o Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-    function sendCommand(direction) {
-      if (!selectedJoint) {
-        alert("Selecione uma junta primeiro.");
-        return;
-      }
-      const url = `${esp32URL}/comando?joint=${selectedJoint}&dir=${direction}`;
-      fetch(url)
-        .then(response => response.text())
-        .then(text => {
-          document.getElementById("status").innerText = `Comando enviado: J${selectedJoint} - ${direction}`;
-        })
-        .catch(err => {
-          document.getElementById("status").innerText = `Erro: ${err}`;
+        // Função para mover as juntas
+        function moveJoint(joint, direction) {
+            const command = {
+                joint: joint,
+                direction: direction,
+                timestamp: Date.now()
+            };
+            
+            // Envia o comando para o Firebase
+            database.ref('commands').push(command)
+                .then(() => console.log('Comando enviado com sucesso'))
+                .catch(error => console.error('Erro ao enviar comando:', error));
+        }
+
+        // Monitora as posições do robô
+        database.ref('positions').on('value', (snapshot) => {
+            const positions = snapshot.val();
+            if (positions) {
+                let positionText = '<ul>';
+                for (const joint in positions) {
+                    positionText += `<li><strong>${joint}:</strong> ${positions[joint]}</li>`;
+                }
+                positionText += '</ul>';
+                document.getElementById('currentPosition').innerHTML = positionText;
+            }
         });
-    }
-  </script>
+    </script>
 </body>
 </html>
-
